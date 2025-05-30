@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>長鼻積分登入系統</title>
+  <style>
+    body {
+      font-family: "微軟正黑體", sans-serif;
+      background-color: #f2f2f2;
+      text-align: center;
+      padding-top: 100px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      width: 250px;
+    }
+    button {
+      background-color: #1d3557;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #457b9d;
+    }
+    .box {
+      background: white;
+      display: inline-block;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>長鼻積分登入系統</h2>
+    <input type="text" id="username" placeholder="帳號"><br>
+    <input type="password" id="password" placeholder="密碼"><br>
+    <button onclick="login()">登入</button>
+    <p id="message" style="color:red;"></p>
+  </div>
+
+  <script>
+    async function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const message = document.getElementById("message");
+
+      if (!username || !password) {
+        message.textContent = "請輸入帳號與密碼";
+        return;
+      }
+
+      const response = await fetch("https://script.google.com/macros/s/AKfycbyQ9rGJ5MZvJz19V9hFfXh39Hj6By9IzZcIijLA5l3AXNi8E5XXSqRnos87gJBPKlmN/exec", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      const result = await response.json();
+      if (result.status === "success") {
+        message.style.color = "green";
+        message.textContent = "登入成功！歡迎 " + result.displayName;
+
+        // 儲存登入者資料 (可用於後續傳資料)
+        localStorage.setItem("loggedInUser", result.displayName);
+        localStorage.setItem("username", username);
+
+        // 1秒後跳轉
+        setTimeout(() => {
+          window.location.href = "form.html";
+        }, 1000);
+
+      } else {
+        message.style.color = "red";
+        message.textContent = "登入失敗：" + result.message;
+      }
+    }
+  </script>
+</body>
+</html>
